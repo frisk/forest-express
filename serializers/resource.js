@@ -58,6 +58,23 @@ function ResourceSerializer(Implementation, model, records, opts, meta) {
     }
   }
 
+  function hasCloseioIntegration() {
+    return opts.integrations && opts.integrations.closeio &&
+      opts.integrations.closeio.apiKey;
+  }
+
+  if (hasCloseioIntegration()) {
+    // jshint camelcase: false
+    if (_.isArray(records)) {
+      records = records.map(function (record) {
+        record.closeio_lead = [];
+        return record;
+      });
+    } else {
+      records.closeio_lead = [];
+    }
+  }
+
   this.perform = function () {
     var typeForAttributes = {};
 
@@ -80,6 +97,22 @@ function ResourceSerializer(Implementation, model, records, opts, meta) {
             }
           };
         } else if (hasStripeIntegration() && field.integration === 'stripe') {
+          dest[field.field] = {
+            ref: 'id',
+            attributes: [],
+            included: false,
+            ignoreRelationshipData: true,
+            relationshipLinks: {
+              related: function (dataSet) {
+                var ret = {
+                  href: '/forest/' + Implementation.getModelName(model) +
+                    '/' + dataSet[schema.idField] + '/' + field.field,
+                };
+                return ret;
+              }
+            }
+          };
+        } else if (hasCloseioIntegration() && field.integration === 'close.io') {
           dest[field.field] = {
             ref: 'id',
             attributes: [],

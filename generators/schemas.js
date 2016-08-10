@@ -20,6 +20,11 @@ module.exports = {
                 opts.integrations.stripe.apiKey;
             }
 
+            function hasCloseioIntegration() {
+              return opts.integrations && opts.integrations.closeio &&
+              opts.integrations.closeio.apiKey;
+            }
+
             function integrationCollectionMatch(integration) {
               var userCollection = integration.userCollection;
               var models = implementation.getModels();
@@ -78,6 +83,17 @@ module.exports = {
               });
             }
 
+            function setupCloseioIntegration() {
+              schema.fields.push({
+                field: 'closeio_lead',
+                type: 'String',
+                reference: 'closeio_leads.id',
+                column: null,
+                isSearchable: false,
+                integration: 'close.io'
+              });
+            }
+
             if (hasIntercomIntegration() &&
               integrationCollectionMatch(opts.integrations.intercom)) {
               setupIntercomIntegration();
@@ -86,6 +102,11 @@ module.exports = {
             if (hasStripeIntegration() &&
               integrationCollectionMatch(opts.integrations.stripe)) {
               setupStripeIntegration();
+            }
+
+            if (hasCloseioIntegration() &&
+              integrationCollectionMatch(opts.integrations.closeio)) {
+              setupCloseioIntegration();
             }
 
             return schema;

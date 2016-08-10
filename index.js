@@ -11,6 +11,7 @@ var ResourcesRoutes = require('./routes/resources');
 var AssociationsRoutes = require('./routes/associations');
 var StripeRoutes = require('./routes/stripe');
 var IntercomRoutes = require('./routes/intercom');
+var CloseioRoutes = require('./routes/closeio');
 var StatRoutes = require('./routes/stats');
 var SessionRoute = require('./routes/sessions');
 var ForestRoutes = require('./routes/forest');
@@ -178,6 +179,33 @@ exports.init = function (Implementation) {
     });
   }
 
+  function hasCloseioIntegration() {
+    return opts.integrations && opts.integrations.closeio &&
+      opts.integrations.closeio.apiKey;
+  }
+
+  function setupCloseioIntegration(apimap) {
+    // jshint camelcase: false
+    var Model = Implementation.getModels()[opts.integrations.stripe.userCollection];
+    var referenceName = Implementation.getModelName(Model) + '.id';
+
+    apimap.push({
+      name: 'closeio_leads',
+      isVirtual: true,
+      isReadOnly: true,
+      fields: [
+        { field: 'id', type: 'String', isSearchable: false },
+        { field: 'url', type: 'String', isSearchable: false, widget: 'link' },
+        { field: 'display_name', type: 'String', isSearchable: false },
+        { field: 'status_label', type: 'String' },
+        { field: 'created_by_name', type: 'String', isSearchable: false },
+        { field: 'date_updated', type: 'Date', isSearchable: false },
+        { field: 'date_created', type: 'Date', isSearchable: false },
+        { field: 'description', type: 'String', isSearchable: false }
+      ]
+    });
+  }
+
   var app = express();
   var opts = Implementation.opts;
 
@@ -222,6 +250,7 @@ exports.init = function (Implementation) {
     .each(function (model) {
       new StripeRoutes(app, model, Implementation, opts).perform();
       new IntercomRoutes(app, model, Implementation, opts).perform();
+      new CloseioRoutes(app, model, Implementation, opts).perform();
       new ResourcesRoutes(app, model, Implementation, opts).perform();
       new AssociationsRoutes(app, model, Implementation, opts).perform();
       new StatRoutes(app, model, Implementation, opts).perform();
@@ -239,6 +268,10 @@ exports.init = function (Implementation) {
 
         if (hasIntercomIntegration()) {
           setupIntercomIntegration(collections);
+        }
+
+        if (hasCloseioIntegration()) {
+          setupCloseioIntegration(collections);
         }
 
         var json = new JSONAPISerializer('collections', collections, {
