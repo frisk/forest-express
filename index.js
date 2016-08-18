@@ -201,7 +201,20 @@ exports.init = function (Implementation) {
         { field: 'created_by_name', type: 'String', isSearchable: false },
         { field: 'date_updated', type: 'Date', isSearchable: false },
         { field: 'date_created', type: 'Date', isSearchable: false },
-        { field: 'description', type: 'String', isSearchable: false }
+        { field: 'description', type: 'String', isSearchable: false },
+        { field: 'emails', type: ['String'], reference: 'closeio_emails.id' },
+      ]
+    }, {
+      name: 'closeio_emails',
+      isVirtual: true,
+      isReadOnly: true,
+      onlyForRelationships: true,
+      fields: [
+        { field: 'id', type: 'String', isSearchable: false },
+        { field: 'status', type: 'String', isSearchable: false },
+        { field: 'sender', type: 'String', isSearchable: false },
+        { field: 'subject', type: 'String', isSearchable: false },
+        { field: 'body_text', type: 'String', isSearchable: false }
       ]
     });
   }
