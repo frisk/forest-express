@@ -194,7 +194,6 @@ exports.init = function (Implementation) {
       isVirtual: true,
       isReadOnly: true,
       fields: [
-        { field: 'id', type: 'String', isSearchable: false },
         { field: 'url', type: 'String', isSearchable: false, widget: 'link' },
         { field: 'display_name', type: 'String', isSearchable: false },
         { field: 'status_label', type: 'String' },
@@ -210,7 +209,6 @@ exports.init = function (Implementation) {
       isReadOnly: true,
       onlyForRelationships: true,
       fields: [
-        { field: 'id', type: 'String', isSearchable: false },
         { field: 'status', type: 'String', isSearchable: false },
         { field: 'sender', type: 'String', isSearchable: false },
         { field: 'subject', type: 'String', isSearchable: false },

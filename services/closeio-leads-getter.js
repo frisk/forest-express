@@ -30,7 +30,8 @@ function CloseioLeadsGetter(Implementation, params, opts) {
 
   function parseSearch() {
     return '&query=' + encodeURIComponent('name:"' + params.search +
-      '" or status:"' + params.search + '"');
+      '" or status:"' + params.search + '"' +
+      '" or url:"' + params.search + '"');
   }
 
   function parseFilters() {
